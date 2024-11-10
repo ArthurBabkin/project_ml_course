@@ -13,9 +13,11 @@ CHECK_SOLUTION_PROMPT = (
     "If the mistakes from 'user' perfectly match with a few of the descriptions, respond with those numbers with one space between each two numbers (without apostrophes or any other symbols). "
     "If the dialogue does not perfectly match any of the descriptions (even if it is really close, but not exact), respond with 'none' (without apostrophes). "
     "If the solutions at all are not about the task or 'user' wrote something not relevant, so it is ALL Cases together, so you should write '1 2 3 4'. "
-    "If 'user' is saying that he does not know how to do, so it is ALL Cases together, so you should write '1 2 3 4'. "
-    "REMEMBER that you answer 'none' ONLY if you are sure that the solution is fully correct, revise the solution of user step by step. "
+    "If 'user' say that he does not know how to solve and wrote almost NOTHING, so it is ALL cases together, so you should write '1 2 3 4'. "
+    "Remember that you answer 'none' ONLY if you are sure that the solution is fully correct, revise the solution of user step by step. "
+    "Do not confuse mistakes in reading conditions and algebra, if the user did not understand the condition correctly or rewrote it not correctly, then this is an mistake in reading the conditions, and if he did not calculate correctly during the solution process, then this is an algebraic error."
     "Remember that solutions from 'user' come from responses from 'user'."
+    "Remember that user can provide short solutions without explanations, in such cases you look at the semantic of solution and final answer."
 
     "\n\nExamples:"
     "\n\nExample 1:"
@@ -43,41 +45,58 @@ CHECK_SOLUTION_PROMPT = (
     "\nClassification: 1 2 3 4"
 )
 
+# Словарь для типов ошибок
+MISTAKES_CATEGORIES = {
+    1: "Алгебра",
+    2: "Геометрия/тригонометрия",
+    3: "Внимательность/чтение условий",
+    4: "Работа с математическими формулами"
+}
+
+# Словарь с задачами на сайте/проде
+# Словарь с задачами
 PRODUCTION_TASKS = [
     {
         "task_number": 1,
-        "task_description": (
-            "Решите систему уравнений: x + y = 10, x - y = 2"
-        ),
-        "correct_solution": (
-            "Сложим два уравнения: \( (x + y) + (x - y) = 10 + 2 \), "
-            "\( 2x = 12 \), \( x = 6 \). Подставим \( x = 6 \) в первое уравнение: "
-            "\( 6 + y = 10 \), \( y = 4 \). Итог: \( x = 6, y = 4 \)."
-        ),
+        "task_description": r"Сколько будет 2 + 2?",
+        "correct_solution": r"Ответ прост: \( 2 + 2 = 4 \).",
     },
     {
         "task_number": 2,
-        "task_description": (
-            "Найдите значение sin(2α), если дано что cos(α) = 0.6 и π < α < 2π."
-        ),
-        "correct_solution": (
-            "Используем формулы: \( \sin^2 \alpha + \cos^2 \alpha = 1 \), чтобы найти \( \sin \alpha \). "
-            "\( \sin \alpha = -\sqrt{1 - (0,6)^2} = -0,8 \) (так как угол в интервале \( \pi < \alpha < 2\pi \), "
-            "синус отрицателен). Затем по формуле \( \sin 2\alpha = 2 \sin \alpha \cos \alpha \): "
-            "\( \sin 2\alpha = 2 \cdot (-0,8) \cdot 0,6 = -0,96 \). Итог: \( \sin 2\alpha = -0,96 \)."
-        ),
+        "task_description": r"Если у Вас есть 3 яблока и Вы купили ещё 5, сколько яблок у Вас теперь?",
+        "correct_solution": r"Ответ: \( 3 + 5 = 8 \). У Вас 8 яблок.",
     },
     {
         "task_number": 3,
+        "task_description": r"Решите систему уравнений: x + y = 10, x - y = 2",
+        "correct_solution": (
+            r"1 способ) Сложим два уравнения: \( (x + y) + (x - y) = 10 + 2 \), "
+            r"\( 2x = 12 \), \( x = 6 \). Подставим \( x = 6 \) в первое уравнение: "
+            r"\( 6 + y = 10 \), \( y = 4 \). Итог: \( x = 6, y = 4 \)."
+            "2 способ) x = 2+y => 2*y = 8, y = 4 и x = 6"
+        ),
+    },
+    {
+        "task_number": 4,
+        "task_description": r"Найдите значение sin(2α), если дано что cos(α) = 0.6 и π < α < 2π.",
+        "correct_solution": (
+            r"Используем формулы: \( \sin^2 \alpha + \cos^2 \alpha = 1 \), чтобы найти \( \sin \alpha \). "
+            r"\( \sin \alpha = -\sqrt{1 - (0,6)^2} = -0,8 \) (так как угол в интервале \( \pi < \alpha < 2\pi \), "
+            r"синус отрицателен). Затем по формуле \( \sin 2\alpha = 2 \sin \alpha \cos \alpha \): "
+            r"\( \sin 2\alpha = 2 \cdot (-0,8) \cdot 0,6 = -0,96 \). Итог: \( \sin 2\alpha = -0,96 \)."
+        ),
+    },
+    {
+        "task_number": 5,
         "task_description": (
-            "У фермера было 100 кг зерна. 20% он использовал для посева, 30% от остатка продал, "
-            "а оставшуюся часть раздал на корм животным. Сколько килограммов зерна он отдал на корм животным?"
+            r"У фермера было 100 кг зерна. 20% он использовал для посева, 30% от остатка продал, "
+            r"а оставшуюся часть раздал на корм животным. Сколько килограммов зерна он отдал на корм животным?"
         ),
         "correct_solution": (
-            "Сначала найдём, сколько зерна фермер использовал для посева: \( 20\% \) от 100 кг = "
-            "\( 100 \times 0,2 = 20 \) кг. Остаётся \( 100 - 20 = 80 \) кг. Далее он продал \( 30\% \) от оставшихся "
-            "80 кг: \( 80 \times 0,3 = 24 \) кг. После продажи осталось \( 80 - 24 = 56 \) кг. Всё, что осталось, "
-            "фермер отдал на корм животным. Итог: 56 кг."
+            r"Сначала найдём, сколько зерна фермер использовал для посева: \( 20\% \) от 100 кг = "
+            r"\( 100 \times 0,2 = 20 \) кг. Остаётся \( 100 - 20 = 80 \) кг. Далее он продал \( 30\% \) от оставшихся "
+            r"80 кг: \( 80 \times 0,3 = 24 \) кг. После продажи осталось \( 80 - 24 = 56 \) кг. Всё, что осталось, "
+            r"фермер отдал на корм животным. Итог: 56 кг."
         ),
     },
 ]

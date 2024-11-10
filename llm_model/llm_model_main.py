@@ -31,7 +31,7 @@ class ChatWithAI:
             messages = [
                 {"role": "system", "content": CHECK_SOLUTION_PROMPT},
                 {"role": "user",
-                 "content": f'Условие задачи: {task_description}\n Правильное решение: {correct_solution}\n Моё решение: {message}'}
+                 "content": f'Task description: {task_description}\n Correct solution: {correct_solution}\n My solution (YOU need to check my solution): {message}'}
             ]
 
             response = await self.model.chat.completions.create(
@@ -41,32 +41,16 @@ class ChatWithAI:
                 temperature=CHAT_TEMPERATURE,
             )
 
-            print('chlen')
-            print(response.choices[0].message.content)
-
             if response.choices[0].message.content == 'None' or response.choices[0].message.content == None or response.choices[0].message.content == 'none':
                 input_ml_model[1] += 1
-                return input_ml_model
+                return None, input_ml_model
             else:
                 mistakes = response.choices[0].message.content.split(' ')
+                mistakes_description = []
                 for i in mistakes:
                     if int(i) <= 4 and int(i) >= 1:
                         input_ml_model[int(i)+1] += 1
-                return input_ml_model
+                        mistakes_description.append(MISTAKES_CATEGORIES[int(i)])
+                return mistakes_description, input_ml_model
         else:
-            return input_ml_model
-
-# async def main():
-#     """
-#     Главная функция для ДЕМОНСТРАЦИИ взаимодействия с классом ChatWithAI.
-#     Симулирует простой разговор с AI.
-#     """
-#     ai = ChatWithAI()
-#
-#     print(PRODUCTION_TASKS[0])
-#
-#     response = await ai.check_solution(0, "Сложим два уравнения: \( (x + y) + (x - y) = 10 + 2 \), \( 2x = 12 \), \( x = 6 \). Подставим \( x = 6 \) в первое уравнение: \( 6 + y = 10 \), \( y = -4 \). Итог: \( x = 6, y = -4 \).", [len(PRODUCTION_TASKS), 0, 0, 0, 0, 0])
-#     print(response)
-#
-# if __name__ == "__main__":
-#     asyncio.run(main())
+            return None, input_ml_model
