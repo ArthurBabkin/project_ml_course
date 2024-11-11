@@ -1,4 +1,5 @@
 # Project ML Course: Итоговый проект по курсу "Анализ Данных и Машинное Обучение" от Университета Иннополис.
+<img width="1727" alt="Снимок экрана 2024-11-10 в 14 29 48" src="https://github.com/user-attachments/assets/8f2b0571-b588-4e0e-b001-79ec46ea8458">
 
 ## Описание проекта
 
@@ -92,11 +93,13 @@ project_ml_course/
    
 
 3. Откройте ссылку, указанную в терминале (например, `http://localhost:8501`).
+<img width="1727" alt="Снимок экрана 2024-11-10 в 14 29 48" src="https://github.com/user-attachments/assets/7860371d-140d-4d65-8d1c-b27357a8dd19">
 
 4. Заполните решения на различные математические номера и нажмите на кнопку "Отослать решения"
+<img width="866" alt="Снимок экрана 2024-11-10 в 14 30 00" src="https://github.com/user-attachments/assets/914606a9-d63d-4190-b60b-524a2d713388">
 
 ### Ссылка на видеодемонстрацию демо приложения: ###
-Uploading ML_Course.mp4…
+https://github.com/user-attachments/assets/e79a2a04-0d5a-4a52-a6a7-8ed35b4ec3ea
 
 ---
 
